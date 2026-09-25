@@ -1,2 +1,3 @@
 npm run test -w @neoflix/api --if-present
+npm run test:e2e -w @neoflix/api --if-present
 npm run test -w @neoflix/web --if-present

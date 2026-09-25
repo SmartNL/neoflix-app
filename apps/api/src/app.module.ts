@@ -1,10 +1,10 @@
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { join } from 'path';
 import { MoviesModule } from './movies/movies.module';
 
 @Module({
@@ -12,12 +12,20 @@ import { MoviesModule } from './movies/movies.module';
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.register({ isGlobal: true, max: 100 }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),
+    ServeStaticModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => [
+        {
+          rootPath:
+            config.get<string>('WEB_DIST_PATH') ??
+            join(__dirname, '..', '..', 'web', 'dist'),
+          exclude: ['/api/{*splat}'],
+        },
+      ],
+    }),
     MoviesModule,
   ],
-  controllers: [AppController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
-  ],
+  controllers: [],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
