@@ -4,11 +4,21 @@
   "private": true,
   "description": "FilmFlix mejorada: NestJS + React + TMDB API.",
   "main": "index.js",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20 <21"
+  },
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev": "concurrently \"npm run start:dev -w @neoflix/api\" \"npm run dev -w @neoflix/web\"",
+    "build": "npm run build -w @neoflix/web && npm run build -w @neoflix/api",
+    "build:web": "npm run build -w @neoflix/web",
+    "build:api": "npm run build -w @neoflix/api"
   },
   "repository": {
     "type": "git",
@@ -23,6 +33,7 @@
   },
   "homepage": "https://github.com/SmartNL/neoflix-app#readme",
   "devDependencies": {
+    "concurrently": "^10.0.5",
     "husky": "^9.1.7"
   }
 }
