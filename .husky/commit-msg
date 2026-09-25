@@ -1,0 +1,22 @@
+msg_file="$1"
+msg=$(cat "$msg_file")
+
+if echo "$msg" | grep -qiE "co-authored-by"; then
+  echo "Commit rechazado: no se permiten tags 'Co-Authored-By' en este proyecto."
+  exit 1
+fi
+
+first_line=$(echo "$msg" | head -1)
+if ! echo "$first_line" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore|ci|revert)(\([a-z0-9_-]+\))?!?: .+"; then
+  echo "Commit rechazado: formato invalido."
+  echo ""
+  echo "Formato esperado: type(scope?): descripcion"
+  echo "Types permitidos: feat, fix, docs, style, refactor, perf, test, chore, ci, revert"
+  echo ""
+  echo "Ejemplos:"
+  echo "  feat(api): add trending movies endpoint"
+  echo "  fix(web): correct search debounce timing"
+  exit 1
+fi
+
+exit 0
